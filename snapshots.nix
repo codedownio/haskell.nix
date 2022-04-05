@@ -55,6 +55,17 @@ let
         };
       };
 
+      # Work around a mismatch between stackage metadata and the
+      # libraries shipped with GHC.
+      fix-filepath = {
+        predicate = ltsInRange "19" "20";
+        extra = hackage: {
+          packages = {
+            "filepath".revision = (((hackage."filepath")."1.4.2.2").revisions).default;
+          };
+        };
+      };
+
       # Add hsc2hs to the snapshot. This is a build tool for many
       # packages. Stackage does not include it in the snapshots
       # because it is expected that hsc2hs comes with ghc.
