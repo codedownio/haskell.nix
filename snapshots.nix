@@ -62,6 +62,7 @@ let
         extra = hackage: {
           packages = {
             "filepath".revision = (((hackage."filepath")."1.4.2.2").revisions).default;
+            "stm".revision = (((hackage."stm")."2.5.0.2").revisions).default;
           };
         };
       };
