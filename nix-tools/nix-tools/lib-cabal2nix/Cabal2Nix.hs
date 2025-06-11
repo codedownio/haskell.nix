@@ -455,6 +455,7 @@ fixSystem :: String -> String
 fixSystem "isJavascript" = "isJavaScript"
 fixSystem "isDragonfly" = "isDragonFly"
 fixSystem "isHpux" = "isHPUX"
+fixSystem "isIrix" = "isIRIX"
 fixSystem s = s
 
 instance ToNixExpr ConfVar where
