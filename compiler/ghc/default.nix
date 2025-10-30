@@ -45,6 +45,8 @@ let self =
 
 , enableDWARF ? false
 
+, enableIPE ? false
+
 , enableTerminfo ? !stdenv.targetPlatform.isAndroid &&
     # Terminfo does not work on older ghc cross arm and windows compilers
      (!haskell-nix.haskellLib.isCrossTarget || !(stdenv.targetPlatform.isAarch32 || stdenv.targetPlatform.isAarch64 || stdenv.targetPlatform.isWindows) || builtins.compareVersions ghc-version "8.10" >= 0)
@@ -322,6 +324,7 @@ let
           + lib.optionalString (!enableShared) "+no_dynamic_ghc"
           + lib.optionalString useLLVM "+llvm"
           + lib.optionalString enableDWARF "+debug_info"
+          + lib.optionalString enableIPE "+ipe"
           + lib.optionalString ((enableNativeBignum && hadrianHasNativeBignumFlavour) || targetPlatform.isGhcjs) "+native_bignum"
           + lib.optionalString targetPlatform.isGhcjs "+no_profiled_libs"
       } --docs=no-sphinx -j --verbose"
