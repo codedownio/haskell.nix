@@ -758,6 +758,17 @@ haskell-nix.haskellLib.makeCompilerDeps (stdenv.mkDerivation (rec {
         }
       ' "$settingsFile"
     done
+  '' + lib.optionalString (!stdenv.isDarwin && targetPlatform != hostPlatform) ''
+    # Add system-cxx-std-lib to text's depends so GHC's runtime linker loads
+    # libstdc++ when loading text for Template Haskell. Without this, C++ symbols
+    # (_Unwind_Resume, __cxa_begin_catch, etc.) from GHC's aarch64 codegen
+    # are not available.
+    for conf in "$out"/lib/package.conf.d/text-*.conf; do
+      if [ -f "$conf" ] && ! grep -q "system-cxx-std-lib" "$conf"; then
+        sed -i '/^depends:/a\    system-cxx-std-lib-1.0' "$conf"
+      fi
+    done
+    "$out/bin/${targetPrefix}ghc-pkg" --global-package-db "$out/lib/package.conf.d" recache || true
   '' + ''
     # Install the bash completion file.
     install -D -m 444 utils/completion/ghc.bash $out/share/bash-completion/completions/${targetPrefix}ghc
@@ -936,6 +947,12 @@ haskell-nix.haskellLib.makeCompilerDeps (stdenv.mkDerivation (rec {
           --replace 'dynamic-library-dirs:' 'dynamic-library-dirs: ${libcxx}/lib'
         find . -name 'system*.conf*'
         cat mk/system-cxx-std-lib-1.0.conf
+      '' + lib.optionalString (!stdenv.isDarwin && targetPlatform != hostPlatform) ''
+        substituteInPlace mk/system-cxx-std-lib-1.0.conf \
+          --replace 'library-dirs:' 'library-dirs: ${targetCC.cc}/${targetPlatform.config}/lib ${targetCC.cc}/lib/gcc/${targetPlatform.config}/${targetCC.cc.version}'
+        substituteInPlace mk/system-cxx-std-lib-1.0.conf \
+          --replace 'extra-libraries:      stdc++' 'extra-libraries:      gcc gcc_eh stdc++'
+        cat mk/system-cxx-std-lib-1.0.conf
       '' + lib.optionalString (installStage1 && haskell-nix.haskellLib.isNativeMusl) ''
         substituteInPlace hadrian/cfg/system.config \
           --replace 'cross-compiling       = YES' \
@@ -1031,6 +1048,12 @@ haskell-nix.haskellLib.makeCompilerDeps (stdenv.mkDerivation (rec {
     substituteInPlace mk/system-cxx-std-lib-1.0.conf \
       --replace 'dynamic-library-dirs:' 'dynamic-library-dirs: ${libcxx}/lib'
     find . -name 'system*.conf*'
+    cat mk/system-cxx-std-lib-1.0.conf
+  '' + lib.optionalString (!stdenv.isDarwin && targetPlatform != hostPlatform) ''
+    substituteInPlace mk/system-cxx-std-lib-1.0.conf \
+      --replace 'library-dirs:' 'library-dirs: ${targetCC.cc}/${targetPlatform.config}/lib ${targetCC.cc}/lib/gcc/${targetPlatform.config}/${targetCC.cc.version}'
+    substituteInPlace mk/system-cxx-std-lib-1.0.conf \
+      --replace 'extra-libraries:      stdc++' 'extra-libraries:      gcc gcc_eh stdc++'
     cat mk/system-cxx-std-lib-1.0.conf
   '' + lib.optionalString (installStage1 && haskell-nix.haskellLib.isNativeMusl) ''
     substituteInPlace hadrian/cfg/system.config \
@@ -1147,12 +1170,35 @@ haskell-nix.haskellLib.makeCompilerDeps (stdenv.mkDerivation (rec {
           substituteInPlace lib/package.conf.d/system-cxx-std-lib-1.0.conf \
             --replace 'dynamic-library-dirs:' 'dynamic-library-dirs: ${libcxx}/lib'
         ''}
+        ${lib.optionalString (!stdenv.isDarwin && targetPlatform != hostPlatform) ''
+          substituteInPlace mk/system-cxx-std-lib-1.0.conf \
+            --replace 'library-dirs:' 'library-dirs: ${targetCC.cc}/${targetPlatform.config}/lib ${targetCC.cc}/lib/gcc/${targetPlatform.config}/${targetCC.cc.version}'
+          substituteInPlace mk/system-cxx-std-lib-1.0.conf \
+            --replace 'extra-libraries:      stdc++' 'extra-libraries:      gcc gcc_eh stdc++'
+          substituteInPlace lib/package.conf.d/system-cxx-std-lib-1.0.conf \
+            --replace 'library-dirs:' 'library-dirs: ${targetCC.cc}/${targetPlatform.config}/lib ${targetCC.cc}/lib/gcc/${targetPlatform.config}/${targetCC.cc.version}'
+          substituteInPlace lib/package.conf.d/system-cxx-std-lib-1.0.conf \
+            --replace 'extra-libraries:      stdc++' 'extra-libraries:      gcc gcc_eh stdc++'
+        ''}
         mkdir -p utils
         cp -r ../../../utils/completion utils
         make install
         cd ../../..
         runHook postInstall
         cd $out
+        ${lib.optionalString (!stdenv.isDarwin && targetPlatform != hostPlatform) ''
+          # Ensure text's package config includes system-cxx-std-lib as a dependency
+          # so that GHC's runtime linker loads libstdc++ when loading text for TH.
+          # Without this, C++ symbols (_Unwind_Resume, __cxa_begin_catch, etc.)
+          # referenced by GHC-generated aarch64 code are not available.
+          for conf in lib/package.conf.d/text-*.conf; do
+            if [ -f "$conf" ] && ! grep -q "system-cxx-std-lib" "$conf"; then
+              sed -i 's/^depends:/depends:\n    system-cxx-std-lib-1.0/' "$conf"
+            fi
+          done
+          # Recache the package DB
+          lib/bin/ghc-pkg --global-package-db lib/package.conf.d recache || true
+        ''}
         rm -rf $out/build
       '';
 }));
