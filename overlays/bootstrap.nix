@@ -371,6 +371,20 @@ in {
 
                 # See https://gitlab.haskell.org/ghc/ghc/-/merge_requests/15096
                 ++ fromUntil "9.6" "9.12.4" ./patches/ghc/ghc-16bit-elf-section-header-overflow.patch
+
+                # TLSDESC relocation support and weak symbol fix for AArch64
+                # Needed for static musl cross-compilation with CPP/TH
+                # See https://github.com/input-output-hk/haskell.nix/issues/2362
+                ++ onAarch64Musl (from "9.4" [
+                  (final.fetchpatch {
+                    url = "https://gitlab.haskell.org/trac-thomasjm/ghc/-/commit/8486c1de87.patch";
+                    sha256 = "sha256-AT8gCvjZqJFJ5M+9fJFTG41txd2vCMtkYbHdtSMWSu8=";
+                  })
+                  (final.fetchpatch {
+                    url = "https://gitlab.haskell.org/trac-thomasjm/ghc/-/commit/6c50275b64.patch";
+                    sha256 = "sha256-UdtzqVKs3e5wXe5qbUwp+ZjvGFVCnuwHE78/B6T9m8s=";
+                  })
+                ])
                 ;
         in ({
             ghc8107 = traceWarnOld "8.10" (final.callPackage ../compiler/ghc {
