@@ -377,8 +377,8 @@ in {
                 # See https://github.com/input-output-hk/haskell.nix/issues/2362
                 ++ onAarch64Musl (from "9.4" [
                   (final.fetchpatch {
-                    url = "https://gitlab.haskell.org/trac-thomasjm/ghc/-/commit/8486c1de87.patch";
-                    sha256 = "sha256-AT8gCvjZqJFJ5M+9fJFTG41txd2vCMtkYbHdtSMWSu8=";
+                    url = "https://gitlab.haskell.org/trac-thomasjm/ghc/-/commit/7a8d50f24e.patch";
+                    sha256 = "sha256-npqdMPneXF+zsGOhZ8qjM70LPXnWRr2cT4l9Lx9nTug=";
                   })
                   (final.fetchpatch {
                     url = "https://gitlab.haskell.org/trac-thomasjm/ghc/-/commit/6c50275b64.patch";
