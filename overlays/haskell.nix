@@ -1052,6 +1052,10 @@ final: prev: {
                     # when cross compiling.
                     setupBuildFlags = final.lib.mkForce [];
                   };
+                } {
+                  # Enable RTS options on the interpreter so --optimistic-linking
+                  # can be passed via ISERV_ARGS for cross-compilation
+                  packages.iserv-proxy.components.exes.iserv-proxy-interpreter.ghcOptions = ["-rtsopts"];
                 }];
               } // final.lib.optionalAttrs (
                      final.stdenv.hostPlatform.isAarch64
