@@ -1103,6 +1103,10 @@ final: prev: {
                     # unwrapped ghc.
                     crossTemplateHaskellSupport = false;
                   };
+                } {
+                  # Enable RTS options on the interpreter so --optimistic-linking
+                  # can be passed via ISERV_ARGS for cross-compilation
+                  packages.iserv-proxy.components.exes.iserv-proxy-interpreter.ghcOptions = ["-rtsopts"];
                 }];
 
                 cabalProjectLocal =
