@@ -378,15 +378,15 @@ in {
                 ++ onAarch64Musl (from "9.4" [
                   (final.fetchpatch {
                     url = "https://gitlab.haskell.org/trac-thomasjm/ghc/-/commit/7a8d50f24e.patch";
-                    sha256 = "sha256-npqdMPneXF+zsGOhZ8qjM70LPXnWRr2cT4l9Lx9nTug=";
+                    sha256 = "sha256-hRKkjtSjsKFWmn/ou2fGwD6AQXkOUNlzLgsd5ZxxqXg=";
                   })
                   (final.fetchpatch {
                     url = "https://gitlab.haskell.org/trac-thomasjm/ghc/-/commit/6c50275b64.patch";
-                    sha256 = "sha256-UdtzqVKs3e5wXe5qbUwp+ZjvGFVCnuwHE78/B6T9m8s=";
+                    sha256 = "sha256-wU5avqGAUxJ/OcjVpruTGj47f+LFIoFcAGrkOLRbhFE=";
                   })
                   (final.fetchpatch {
                     url = "https://gitlab.haskell.org/trac-thomasjm/ghc/-/commit/c59ca0f3f9.patch";
-                    sha256 = "sha256-6PxkUO2lZfXJktkuQK+DT6xXPn2SKc3jNWxGIPrpKqg=";
+                    sha256 = "sha256-eWa5essNH4nbrbEqPv79ZHe6aYt2GH6D8nVfv/Uy8dM=";
                   })
                 ])
                 ;
