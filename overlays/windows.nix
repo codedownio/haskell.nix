@@ -20,7 +20,7 @@ final: prev:
 } // prev.lib.optionalAttrs (prev.stdenv.hostPlatform.isWindows && prev.stdenv.hostPlatform.libc == "ucrt") {
   windows = prev.windows // {
     # TODO update stdenv.cc so that the wrapper adds -D_UCRT for libc=="ucrt"
-    mingw_w64_pthreads = prev.windows.mingw_w64_pthreads.overrideAttrs { CPPFLAGS = "-D_UCRT"; };
+    pthreads = prev.windows.pthreads.overrideAttrs { CPPFLAGS = "-D_UCRT"; };
   };
 } // prev.lib.optionalAttrs prev.stdenv.hostPlatform.isWindows {
   # If we build libffi with high entropy, we keep running into
@@ -43,7 +43,7 @@ final: prev:
           inherit (final.stdenv) hostPlatform;
           inherit (final.pkgsBuildBuild) lib writeShellScriptBin;
           wine = final.pkgsBuildBuild.wine64Packages.minimal;
-          inherit (final.windows) mingw_w64_pthreads;
+          inherit (final.windows) pthreads;
           inherit (final) gmp;
           inherit (final.pkgsBuildBuild) symlinkJoin;
           # iserv-proxy needs to come from the buildPackages, as it needs to run on the
@@ -118,7 +118,7 @@ final: prev:
         }
         # Fix dependencies and case-sensitive filesystem builds for unix-time.
         // pkgs.lib.optionalAttrs pkgs.stdenv.hostPlatform.isWindows {
-          unix-time.components.library.libs = [ pkgs.windows.mingw_w64_pthreads ];
+          unix-time.components.library.libs = [ pkgs.windows.pthreads ];
           unix-time.postUnpack = "substituteInPlace */cbits/win_patch.h --replace Windows.h windows.h";
         };
       }

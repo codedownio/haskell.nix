@@ -3,7 +3,7 @@
 { lib
 , writeShellScriptBin
 , wine
-, mingw_w64_pthreads
+, pthreads
 , iserv-proxy
 , iserv-proxy-interpreter
 , iserv-proxy-interpreter-prof
@@ -69,8 +69,8 @@ let
     "-fexternal-interpreter"
     "-pgmi" "${wineIservWrapper}/bin/iserv-wrapper"
     # TODO: this should be automatically injected based on the extraLibrary.
-    "-L${mingw_w64_pthreads}/lib"
-    "-L${mingw_w64_pthreads}/bin"
+    "-L${pthreads}/lib"
+    "-L${pthreads}/bin"
     "-L${gmp}/lib"
     ];
 
