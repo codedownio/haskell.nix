@@ -384,6 +384,10 @@ in {
                     url = "https://gitlab.haskell.org/trac-thomasjm/ghc/-/commit/6c50275b64.patch";
                     sha256 = "sha256-UdtzqVKs3e5wXe5qbUwp+ZjvGFVCnuwHE78/B6T9m8s=";
                   })
+                  (final.fetchpatch {
+                    url = "https://gitlab.haskell.org/trac-thomasjm/ghc/-/commit/6a95a102a2.patch";
+                    sha256 = "sha256-PJw/gFuTcoXa6sdNlPlDsuMEChLIqnoKOMdWvqe1UxI=";
+                  })
                 ])
                 ;
         in ({
